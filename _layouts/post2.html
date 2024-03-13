@@ -10,6 +10,48 @@ tail_includes:
 ---
 {% include lang.html %}
 
+<style>
+  .read-more {
+    opacity: 0;
+    max-height: 0;
+    font-size: 0;
+    transition: 0.25s ease;
+    display: none;
+  }
+
+  .read-more-state {
+    display: none;
+  }
+
+  .read-more-state:checked ~ .read-more {
+    opacity: 1;
+    font-size: inherit;
+    max-height: 999em;
+    display: inherit;
+  }
+
+  .read-more-state ~ .read-more-trigger:before {
+    content: 'Continue reading...';
+  }
+
+  .read-more-state:checked ~ .read-more-trigger:before {
+    content: 'Show less...';
+  }
+
+  .read-more-trigger {
+    cursor: pointer;
+    padding: 1em 0.5em;
+    color: #0085bd;
+    font-size: 0.9em;
+    line-height: 2;
+    border: 1px solid #0085bd;
+    border-radius: 0.25em;
+    font-weight: 500;
+    display: grid;
+    text-align: center;
+  }
+</style>
+
 <article class="px-1">
   <header>
     <h1 data-toc-skip>{{ page.title }}</h1>
@@ -92,7 +134,16 @@ tail_includes:
   </header>
 
   <div class="content">
-    {{ content }}
+    {% if content contains '<!--more-->' %}
+      <div>{{ content | split: '<!--more-->' | first }}</div>
+      <input type="checkbox" class="read-more-state" id="{{ page.url }}">
+      <div class="read-more">
+        {{ content | split: '<!--more-->' | last }}
+      </div>
+      <label for="{{ page.url }}" class="read-more-trigger"></label>
+    {% else %}
+      {{ content }}
+    {% endif %}
   </div>
 
   <div class="post-tail-wrapper text-muted">
